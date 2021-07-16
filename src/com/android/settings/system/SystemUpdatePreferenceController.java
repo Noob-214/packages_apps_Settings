@@ -35,9 +35,6 @@ public class SystemUpdatePreferenceController extends BasePreferenceController {
 
     private static final String KEY_SYSTEM_UPDATE_SETTINGS = "system_update_settings";
 
-    private static final String OTA_BUILD_TYPE_PROP = "ro.xtended.build.type";
-    private static final String OTA_APP_PACKAGE = "org.lineageos.updater";
-
     private final UserManager mUm;
 
     public SystemUpdatePreferenceController(Context context) {
@@ -47,17 +44,10 @@ public class SystemUpdatePreferenceController extends BasePreferenceController {
 
     @Override
     public int getAvailabilityStatus() {
-        String buildtype = SystemProperties.get(OTA_BUILD_TYPE_PROP,"unofficial");
-        if (!mUm.isAdminUser() || !buildtype.equalsIgnoreCase("official")){
-            return UNSUPPORTED_ON_DEVICE;
-        }
-        try {
-            PackageManager pm = mContext.getPackageManager();
-            pm.getPackageInfo(OTA_APP_PACKAGE, PackageManager.GET_ACTIVITIES);
-        } catch (Exception e) {
-            return UNSUPPORTED_ON_DEVICE;
-        }
-        return AVAILABLE;
+         return mContext.getResources().getBoolean(R.bool.config_show_system_update_settings)
+                && mUm.isAdminUser()
+                ? AVAILABLE
+                : UNSUPPORTED_ON_DEVICE;
     }
 
     @Override
